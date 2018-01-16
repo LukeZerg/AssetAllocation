@@ -1,0 +1,2 @@
+﻿Code,Multiplier,SlipPrice,FeesRatio
+BOND,10000,0.005,0.0005

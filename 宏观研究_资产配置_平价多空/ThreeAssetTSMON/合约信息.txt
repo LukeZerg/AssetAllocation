@@ -1,0 +1,4 @@
+﻿Code,Multiplier,SlipPrice,FeesRatio
+STK,300,0.2,0.0005
+COM,100,1,0.0005
+ND,10000,0.005,0.0005

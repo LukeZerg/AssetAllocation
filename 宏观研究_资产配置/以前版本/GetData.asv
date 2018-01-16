@@ -1,0 +1,36 @@
+%%取数据,3个
+w = windmatlab;
+[data1,codes1,fields1,times1,~]=w.edb('S0105896','2015-01-01','2016-08-03','Fill=Previous'); %南华
+[data2,codes2,fields2,times2,~]=w.edb('M0066367','2015-01-01','2016-08-03','Fill=Previous'); %活跃合约 沪深300
+[data3,codes3,fields3,times3,~]=w.edb('M0096849','2015-01-01','2016-08-03','Fill=Previous'); %活跃合约 5年期国债期货
+%数据较少，去除 [GZ10_data,GZ10_codes,GZ10_fields,GZ10_times,~]=w.edb('S0213051','2015-02-01','2016-08-03','Fill=Previous'); %活跃合约 10年期国债期货
+%%
+
+Today = '2016/04/01';                           %注意格式，1位月、日前要加0
+[index_start,index] = GetIndex(Today, datestr(times1,26));     %获得时间起始index
+dt1 = data1(index_start:index,1);
+[index_start,index] = GetIndex(Today, datestr(times2,26));     %获得时间起始index
+dt2 = data2(index_start:index,1);
+[index_start,index] = GetIndex(Today, datestr(times3,26));     %获得时间起始index
+dt3 = data3(index_start:index,1);
+
+box(1).dt = dt1;
+box(2).dt = dt2;
+box(3).dt = dt3;
+CovMatrix = zeros(3,3);
+for i = 1:3
+    for j = 1:3
+        temp = cov(box(i).dt,box(j).dt);
+        CovMatrix(i,j) = temp(1,2);
+    end
+end
+%初始化fmincon
+x0 = [0.3;0.3;0.4];
+A = [];
+b = [];
+Aeq = [1,1,1];
+beq = 1;
+lb = [0;0;0];
+up = [0;0;0];
+
+result = fmincon(@(x) fmin(x,cov),x0,A,b,Aeq,beq,lb,ub)
